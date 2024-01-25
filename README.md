@@ -13,7 +13,7 @@ Donezo is an advanced to-do application inspired by Todoist, designed to demonst
 
 ## Summary
 
-'My Todo App' is built to offer a seamless task management experience, with features like quick task entry, project categorization, priority setting, collaborative project sharing, and more. The aim is to create a productive environment where users can easily plan and track their daily activities.
+'Donezo' is built to offer a seamless task management experience, with features like quick task entry, project categorization, priority setting, collaborative project sharing, and more. The aim is to create a productive environment where users can easily plan and track their daily activities.
 
 ## Technologies
 
