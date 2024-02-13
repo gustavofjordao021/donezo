@@ -1,6 +1,8 @@
-# Donezon
+# Donezo
 
-Donezo is an advanced to-do application inspired by Todoist, designed to demonstrate and practice full-stack development skills using the MERN stack, supplemented with Next.js, Supabase, and shadcn/ui components. The app allows users to manage tasks, organize projects, and collaborate with others efficiently.
+Donezo is an advanced to-do application inspired by Todoist, designed with MERN stack and supplemented with Next.js, Supabase, and shadcn/ui components. The app allows users to manage tasks, organize projects, and collaborate with others efficiently. Ultimately, it aims to supercharge your productivity and remove some of the heavy lifting associated with task management.
+
+The app is also meant to be a practice sandbox to keep my full-stack web development, design, and general Product Management skills sharp. If you have feedback, check the [About me](#about-me) and send me your thoughts!
 
 ## Table of Contents
 
@@ -8,8 +10,7 @@ Donezo is an advanced to-do application inspired by Todoist, designed to demonst
 - [Technologies](#technologies)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
-- [Contributing](#contributing)
-- [License](#license)
+- [About me](#about-me)
 
 ## Summary
 
@@ -32,9 +33,9 @@ Donezo is an advanced to-do application inspired by Todoist, designed to demonst
 ### Backend
 
 - **Supabase**:
-  - *PostgreSQL Database*: Stores user data, tasks, projects, and labels.
-  - *Authentication*: Manages user sign-in and security.
-  - *Realtime Subscriptions*: Pushes updates to the frontend app in real-time as data changes.
+  - _PostgreSQL Database_: Stores user data, tasks, projects, and labels.
+  - _Authentication_: Manages user sign-in and security.
+  - _Realtime Subscriptions_: Pushes updates to the frontend app in real-time as data changes.
 
 ### Deployment
 
@@ -46,7 +47,7 @@ To get a local copy up and running, follow these simple steps.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/my-todo-app.git
+git clone https://github.com/gustavofjordao021/donezo.git
 
 # Navigate to the project directory
 cd my-todo-app
@@ -56,3 +57,12 @@ npm install
 
 # Start the development server
 npm run dev
+```
+
+## About me
+
+Hey 👋🏻!
+
+My name is Gustavo Jordão, and I'm a Brazilian/Portuguese Product Manager currently living in sunny 🌞 Miami, Florida. I like to be hands-on and practice all skills that comprise Product Management, including full-stack web development, design, and data analytics. Also, I'm passionate about machine-learning, generative AI, blockchain/decentralization, and how general design and digital products affects our lives.
+
+Looking to keep in touch? Check me out on X (Twitter?) at [@gjordaodoteth](https://twitter.com/gjordaodoteth) or reach out at [gustavo.jordao021@gmail.com](mailto:gustavo.jordao021@gmail).
