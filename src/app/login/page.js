@@ -4,42 +4,40 @@ import { supabase } from "../../utils/supabase/supabaseClient";
 import { useRouter } from "next/navigation";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useEffect, useState } from "react";
+import {
+	getUser,
+	onAuthStateChange,
+} from "../../utils/supabase/services/authService";
 
 export default function Page() {
 	const router = useRouter();
-	const [subscription, setSubscription] = useState(null);
 
 	useEffect(() => {
-		const getInitialSession = async () => {
-			const { data } = await supabase.auth.getSession();
+		const checkUserSession = async () => {
+			const user = await getUser();
 
-			if (data.session) {
+			if (user) {
 				router.push("/main");
 			}
 		};
 
-		getInitialSession();
+		checkUserSession();
 
-		const unsubscribe = supabase.auth.onAuthStateChange((event, session) => {
+		const unsubscribe = onAuthStateChange((event, session) => {
 			switch (event) {
 				case "SIGNED_IN":
 					console.log("User signed in:", session.user);
 					router.push("/main");
 					break;
 				case "INITIAL_SESSION":
-					console.log("Initial session event:", session);
 					break;
 				default:
 					break;
 			}
 		});
 
-		setSubscription(unsubscribe); // Store the unsubscribe function in state
-
 		return () => {
-			if (subscription) {
-				subscription(); // Call the unsubscribe function if it exists
-			}
+			unsubscribe();
 		};
 	}, [router]);
 
@@ -51,7 +49,8 @@ export default function Page() {
 					theme: ThemeSupa,
 					style: { container: { width: "400px" } },
 				}}
-				providers={[]}
+				providers={["google"]}
+				redirectTo="http://localhost:3000/main"
 			/>
 		</div>
 	);

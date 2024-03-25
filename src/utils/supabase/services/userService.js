@@ -1,15 +1,27 @@
 import { supabase } from "../supabaseClient";
 
-export async function getUserEmail(userId) {
-	const { data, error } = await supabase
-		.from("users")
-		.select("email")
-		.eq("id", userId)
-		.single();
+export const getUserEmail = async (userId) => {
+	try {
+		const response = await supabase
+			.from("users")
+			.select("email")
+			.eq("user_id", userId)
+			.single();
 
-	if (error) {
+		// Check for and handle any errors returned by Supabase
+		if (response.error) {
+			console.error("Error retrieving user email:", response.error.message);
+			throw new Error(response.error.message);
+		}
+
+		// Access the email from the response data
+		const email = response.data.email;
+
+		return email;
+	} catch (error) {
+		// This catch block will handle exceptions thrown explicitly in the try block
+		// and any other errors that might occur during the execution of the async operation.
+		console.error("Caught error:", error.message);
 		throw error;
 	}
-
-	return data;
-}
+};
