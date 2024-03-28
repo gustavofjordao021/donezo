@@ -1,8 +1,8 @@
-import { supabase } from "../supabaseClient";
+import { createSupabaseClient } from "../supabaseClient";
 
 export const getUserEmail = async (userId) => {
 	try {
-		const response = await supabase
+		const response = await createSupabaseClient
 			.from("users")
 			.select("email")
 			.eq("user_id", userId)

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { BiLogOut } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { createSupabaseClient } from "../../utils/supabase/supabaseClient";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -12,15 +13,38 @@ import {
 import {
 	getUser,
 	signOut,
+	initSupabase,
 	onAuthStateChange,
 } from "../../utils/supabase/services/authService";
 
 export default function Page() {
 	const router = useRouter();
 
+	const checkUserSession = async () => {
+		const supabase = createSupabaseClient();
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
+
+		if (session) {
+			const authenticatedSupabase = initSupabase(session.access_token);
+			const user = await getUser(authenticatedSupabase);
+
+			if (!user) {
+				router.push("/login");
+			}
+
+			return authenticatedSupabase;
+		}
+
+		return null;
+	};
+
 	const handleSignOut = async () => {
 		try {
-			await signOut();
+			const supabase = await checkUserSession();
+			console.log(supabase);
+			await signOut(supabase);
 			router.push("/login");
 		} catch (error) {
 			console.error("Error signing out:", error.message);
@@ -28,31 +52,29 @@ export default function Page() {
 	};
 
 	useEffect(() => {
-		const checkUserSession = async () => {
-			const user = await getUser();
+		const initializeSupabase = async () => {
+			const supabase = await checkUserSession();
 
-			if (!user) {
-				router.push("/login");
+			if (supabase) {
+				const unsubscribe = onAuthStateChange(supabase, (event, session) => {
+					switch (event) {
+						case "SIGNED_IN":
+							break;
+						case "SIGNED_OUT":
+							handleSignOut();
+							break;
+						default:
+							break;
+					}
+				});
+
+				return () => {
+					unsubscribe();
+				};
 			}
 		};
 
-		checkUserSession();
-
-		const unsubscribe = onAuthStateChange((event, session) => {
-			switch (event) {
-				case "SIGNED_IN":
-					router.push("/main");
-					break;
-				case "INITIAL_SESSION":
-					break;
-				default:
-					break;
-			}
-		});
-
-		return () => {
-			unsubscribe();
-		};
+		initializeSupabase();
 	}, [router]);
 
 	return (

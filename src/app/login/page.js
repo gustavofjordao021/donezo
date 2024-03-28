@@ -1,12 +1,13 @@
 "use client";
 import { Auth } from "@supabase/auth-ui-react";
-import { supabase } from "../../utils/supabase/supabaseClient";
 import { useRouter } from "next/navigation";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { createSupabaseClient } from "../../utils/supabase/supabaseClient";
 import {
 	getUser,
 	onAuthStateChange,
+	initSupabase,
 } from "../../utils/supabase/services/authService";
 
 export default function Page() {
@@ -14,32 +15,59 @@ export default function Page() {
 
 	useEffect(() => {
 		const checkUserSession = async () => {
-			const user = await getUser();
+			// Create a new Supabase client instance
+			const supabase = createSupabaseClient();
 
-			if (user) {
-				router.push("/main");
-			}
-		};
+			// Get the current session
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
 
-		checkUserSession();
+			if (session) {
+				// Initialize the Supabase client with the session access token
+				const authenticatedSupabase = initSupabase(session.access_token);
 
-		const unsubscribe = onAuthStateChange((event, session) => {
-			switch (event) {
-				case "SIGNED_IN":
-					console.log("User signed in:", session.user);
+				console.log("authenticatedSupabase", authenticatedSupabase);
+
+				// Get the authenticated user
+				const user = await getUser(authenticatedSupabase);
+
+				if (user) {
+					// If the user is found, redirect to the main page
 					router.push("/main");
-					break;
-				case "INITIAL_SESSION":
-					break;
-				default:
-					break;
-			}
-		});
+				}
 
-		return () => {
-			unsubscribe();
+				// Set up the auth state change listener
+				const unsubscribe = onAuthStateChange(
+					authenticatedSupabase,
+					(event, session) => {
+						switch (event) {
+							case "SIGNED_IN":
+								console.log("User signed in:", session.user);
+								// Redirect to the main page
+								router.push("/main");
+								break;
+							case "INITIAL_SESSION":
+								console.log("INITIAL_SESSION");
+								break;
+							default:
+								break;
+						}
+					}
+				);
+
+				// Cleanup function to unsubscribe from the auth state change listener
+				return () => {
+					unsubscribe();
+				};
+			}
 		};
+
+		// Call the checkUserSession function
+		checkUserSession();
 	}, [router]);
+
+	const supabase = createSupabaseClient();
 
 	return (
 		<div className="flex justify-center items-center min-h-screen">
