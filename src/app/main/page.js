@@ -32,8 +32,6 @@ export default function Page() {
 			throw error;
 		}
 
-		console.log("Session from Supabase:", session);
-
 		if (session) {
 			const authenticatedSupabase = initSupabase(session.access_token);
 			const user = await getUser(authenticatedSupabase);
@@ -81,10 +79,9 @@ export default function Page() {
 			if (supabase) {
 				const unsubscribe = onAuthStateChange(supabase, (event, session) => {
 					switch (event) {
-						case "SIGNED_IN":
-							break;
 						case "SIGNED_OUT":
-							handleSignOut();
+							// When the user signs out, redirect to the /login page
+							router.push("/login");
 							break;
 						default:
 							break;
@@ -94,6 +91,9 @@ export default function Page() {
 				return () => {
 					unsubscribe();
 				};
+			} else {
+				// If no active session is found, redirect to the /login page
+				router.push("/login");
 			}
 		};
 

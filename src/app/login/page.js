@@ -27,8 +27,6 @@ export default function Page() {
 				// Initialize the Supabase client with the session access token
 				const authenticatedSupabase = initSupabase(session.access_token);
 
-				console.log("authenticatedSupabase", authenticatedSupabase);
-
 				// Get the authenticated user
 				const user = await getUser(authenticatedSupabase);
 
@@ -36,34 +34,25 @@ export default function Page() {
 					// If the user is found, redirect to the main page
 					router.push("/main");
 				}
-
+			} else {
 				// Set up the auth state change listener
-				const unsubscribe = onAuthStateChange(
-					authenticatedSupabase,
-					(event, session) => {
-						switch (event) {
-							case "SIGNED_IN":
-								console.log("User signed in:", session.user);
-								// Redirect to the main page
-								router.push("/main");
-								break;
-							case "INITIAL_SESSION":
-								console.log("INITIAL_SESSION");
-								break;
-							default:
-								break;
-						}
+				const unsubscribe = onAuthStateChange(supabase, (event, session) => {
+					switch (event) {
+						case "SIGNED_IN":
+							// When the user signs in, redirect to the /main page
+							router.push("/main");
+							break;
+						default:
+							break;
 					}
-				);
+				});
 
-				// Cleanup function to unsubscribe from the auth state change listener
 				return () => {
 					unsubscribe();
 				};
 			}
 		};
 
-		// Call the checkUserSession function
 		checkUserSession();
 	}, [router]);
 

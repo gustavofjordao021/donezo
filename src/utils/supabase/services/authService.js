@@ -23,18 +23,16 @@ export const getUser = async (supabase) => {
 	return user;
 };
 
-export const onAuthStateChange = (client, callback) => {
-	if (!client) {
-		throw new Error("client client not provided");
+export const onAuthStateChange = (supabase, callback) => {
+	if (!supabase) {
+		throw new Error("Supabase client not provided");
 	}
 
-	const {
-		data: { subscription },
-	} = client.auth.onAuthStateChange((event, session) => {
+	const unsubscribe = supabase.auth.onAuthStateChange((event, session) => {
 		callback(event, session);
 	});
 
-	return subscription.unsubscribe;
+	return unsubscribe;
 };
 
 export const signOut = async (supabase) => {
