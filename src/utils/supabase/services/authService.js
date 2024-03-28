@@ -37,17 +37,15 @@ export const onAuthStateChange = (client, callback) => {
 	return subscription.unsubscribe;
 };
 
-export const signOut = async (client) => {
-	if (!client) {
+export const signOut = async (supabase) => {
+	if (!supabase) {
 		throw new Error("client not initialized");
 	}
 
-	const { error } = await client.auth.signOut();
+	const { error } = await supabase.auth.signOut();
 
 	if (error) {
 		console.error("Error signing out:", error.message);
 		throw error;
 	}
-
-	await client.auth.setSession(null);
 };

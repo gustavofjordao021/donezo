@@ -24,30 +24,53 @@ export default function Page() {
 		const supabase = createSupabaseClient();
 		const {
 			data: { session },
+			error,
 		} = await supabase.auth.getSession();
+
+		if (error) {
+			console.error("Error retrieving session:", error.message);
+			throw error;
+		}
+
+		console.log("Session from Supabase:", session);
 
 		if (session) {
 			const authenticatedSupabase = initSupabase(session.access_token);
 			const user = await getUser(authenticatedSupabase);
 
 			if (!user) {
-				router.push("/login");
+				console.error("User not found");
+				throw new Error("User not found");
 			}
 
 			return authenticatedSupabase;
 		}
 
+		console.log("No active session");
 		return null;
 	};
 
 	const handleSignOut = async () => {
 		try {
 			const supabase = await checkUserSession();
-			console.log(supabase);
-			await signOut(supabase);
-			router.push("/login");
+			if (supabase) {
+				try {
+					await signOut(supabase);
+				} catch (error) {
+					console.error("Error during sign-out:", error.message);
+					throw error; // Rethrow the error to be caught by the outer catch block
+				}
+			} else {
+				console.error("Supabase client is null");
+				throw new Error("Supabase client is null"); // Throw an error to be caught by the outer catch block
+			}
+
+			router.push("/login").catch((error) => {
+				console.error("Error navigating to /login:", error);
+			});
 		} catch (error) {
-			console.error("Error signing out:", error.message);
+			console.error("Error in handleSignOut:", error.message);
+			// Handle the error appropriately, e.g., display an error message to the user
 		}
 	};
 
